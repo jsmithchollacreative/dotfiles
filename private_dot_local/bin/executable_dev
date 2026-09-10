@@ -37,7 +37,7 @@ check_dep "lazygit"
 
 OPENCODE_HOST="${OPENCODE_HOST:-127.0.0.1}"
 OPENCODE_PORT="${OPENCODE_PORT:-4096}"
-OPENCODE_ATTACH_CMD="opencode attach http://${OPENCODE_HOST}:${OPENCODE_PORT} --dir ."
+OPENCODE_ATTACH_CMD="opencode attach http://${OPENCODE_HOST}:${OPENCODE_PORT} --dir . 2>/dev/null || opencode"
 
 TARGET_DIR=$(realpath "$TARGET_DIR")
 [[ ! -d "$TARGET_DIR" ]] && die "'$TARGET_DIR' is not a directory."
