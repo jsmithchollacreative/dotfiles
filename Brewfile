@@ -29,7 +29,7 @@ brew "taplo"         # TOML linter
 cask "orbstack"
 
 # Terminal Emulator
-cask "alacritty"
+cask "ghostty"
 
 # Editor
 cask "visual-studio-code"
