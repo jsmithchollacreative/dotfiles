@@ -164,3 +164,8 @@
 125. Guard long installs by setting `CHEZMOI_INSTALL_TOOLS=0` when you want to skip them (e.g., ad-hoc testing); document permanent skips in AGENTS first.
 126. `.mise.toml` is tracked as `dot_mise.toml`; run `mise install` or `mise apply` whenever tool versions change and commit the updated file.
 127. `run_after_install-tools.sh` automatically runs `mise trust --yes ~/.mise.toml` before installing tools so fresh systems do not prompt; keep this behavior if you relocate the config.
+
+## NEOVIM LAZYVIM
+128. The Neovim config is LazyVim, tracked as `dot_config/nvim/` -> `$HOME/.config/nvim/`: `init.lua`, `lua/config/*.lua`, `lua/plugins/*.lua`, `lazy-lock.json`, `lazyvim.json`, `stylua.toml`, and `dot_neoconf.json`. This is cross-platform.
+129. Theme is gruvbox, configured in `lua/plugins/colorscheme.lua` (adds `ellisonleao/gruvbox.nvim` and sets the `LazyVim` `opts.colorscheme`). Do not re-enable `lua/plugins/example.lua`; it returns an empty spec.
+130. The standalone Vim config (`dot_vimrc`, `dot_config/vim/`) stays independent of LazyVim; CI validates it by launching `nvim` against `$HOME/.vimrc` and validates LazyVim with a `loadfile` Lua syntax pass over `dot_config/nvim`.
