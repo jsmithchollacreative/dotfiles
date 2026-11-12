@@ -4,7 +4,18 @@
 
 set -eu
 
-TAILSCALE_IP="{{ .tailscale_ip | default "100.74.181.114" }}"
+# Skip on machines without a functioning systemd (e.g. CI runners)
+# or without glances installed.
+if ! command -v systemctl >/dev/null 2>&1 || ! command -v glances >/dev/null 2>&1; then
+  echo "install-system-services: systemctl or glances unavailable, skipping"
+  exit 0
+fi
+if ! systemctl is-system-running >/dev/null 2>&1; then
+  echo "install-system-services: systemd not running, skipping"
+  exit 0
+fi
+
+TAILSCALE_IP="{{ get . "tailscale_ip" "100.74.181.114" }}"
 UNIT_NAME="glances.service"
 UNIT_DIR=/etc/systemd/system
 TMP_UNIT=$(mktemp)
