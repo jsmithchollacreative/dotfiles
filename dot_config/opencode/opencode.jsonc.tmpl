@@ -9,7 +9,7 @@
         "type": "remote",
         "url": "https://mcp.context7.com/mcp",
         "headers": {
-          "CONTEXT7_API_KEY": "{{ get . "context7_api_key" "" }}",
+          "CONTEXT7_API_KEY": "{{ if hasKey . "context7_api_key" }}{{ .context7_api_key }}{{ end }}",
         },
         "disabled": false,
       },

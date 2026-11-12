@@ -15,7 +15,7 @@ if ! systemctl is-system-running >/dev/null 2>&1; then
   exit 0
 fi
 
-TAILSCALE_IP="{{ get . "tailscale_ip" "100.74.181.114" }}"
+TAILSCALE_IP="{{ if hasKey . "tailscale_ip" }}{{ .tailscale_ip }}{{ else }}100.74.181.114{{ end }}"
 UNIT_NAME="glances.service"
 UNIT_DIR=/etc/systemd/system
 TMP_UNIT=$(mktemp)
