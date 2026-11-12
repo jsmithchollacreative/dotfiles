@@ -161,3 +161,6 @@ export OPENCODE_PORT="${OPENCODE_PORT:-4096}"
 # Editor
 export EDITOR="nvim"
 export VISUAL="code --wait"
+
+# opencode v2
+[[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
