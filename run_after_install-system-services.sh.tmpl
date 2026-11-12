@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Installs host-level systemd services that live outside $HOME.
+# Idempotent: writes the unit to a temp file, installs only if changed.
+
+set -eu
+
+# Skip on machines without a functioning systemd (e.g. CI runners)
+# or without glances installed.
+if ! command -v systemctl >/dev/null 2>&1 || ! command -v glances >/dev/null 2>&1; then
+  echo "install-system-services: systemctl or glances unavailable, skipping"
+  exit 0
+fi
+if ! systemctl is-system-running >/dev/null 2>&1; then
+  echo "install-system-services: systemd not running, skipping"
+  exit 0
+fi
+
+TAILSCALE_IP="{{ if hasKey . "tailscale_ip" }}{{ .tailscale_ip }}{{ else }}100.74.181.114{{ end }}"
+UNIT_NAME="glances.service"
+UNIT_DIR=/etc/systemd/system
+TMP_UNIT=$(mktemp)
+
+if ! command -v sudo >/dev/null 2>&1; then
+  echo "install-system-services: sudo not available, skipping unit install" >&2
+  exit 0
+fi
+
+cat >"$TMP_UNIT" <<EOF
+[Unit]
+Description=Glances web UI (bound to Tailscale interface)
+After=network.target tailscaled.service
+Wants=tailscaled.service
+
+[Service]
+ExecStartPre=/bin/sh -c 'for i in \$(seq 1 30); do ip -4 addr show dev tailscale0 >/dev/null 2>&1 && exit 0; sleep 2; done; exit 1'
+ExecStart=/usr/bin/glances -w -B ${TAILSCALE_IP}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+if [ ! -f "${UNIT_DIR}/${UNIT_NAME}" ] || ! cmp -s "$TMP_UNIT" "${UNIT_DIR}/${UNIT_NAME}"; then
+  sudo install -m 644 "$TMP_UNIT" "${UNIT_DIR}/${UNIT_NAME}"
+  sudo systemctl daemon-reload
+  sudo systemctl enable "${UNIT_NAME}" >/dev/null
+  echo "install-system-services: ${UNIT_NAME} installed/updated and enabled"
+else
+  echo "install-system-services: ${UNIT_NAME} unchanged"
+fi
+
+sudo systemctl restart "${UNIT_NAME}"
+rm -f "$TMP_UNIT"

@@ -2,6 +2,7 @@
 # Install with: mise install
 
 [tools]
+uv = "latest"
 # Programming Languages - use flexible versions for easier updates
 node = "lts"         # Latest LTS Node.js
 python = "3.12"      # Python 3.12.x (latest patch)

@@ -54,7 +54,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm git curl zsh chezmoi sudo
+          pacman -Syu --noconfirm git curl zsh sudo chezmoi
 
       - name: Create builder user
         env:
